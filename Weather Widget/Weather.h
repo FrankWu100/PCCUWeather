@@ -10,6 +10,7 @@
 
 @interface Weather : NSObject
 
+@property (nonatomic, strong) NSString *location;
 @property (nonatomic, strong) NSString *tempature;
 @property (nonatomic, strong) NSString *humidity;
 @property (nonatomic, strong) NSString *windDirection;
@@ -17,5 +18,9 @@
 @property (nonatomic, strong) NSString *atmosph;
 @property (nonatomic, strong) NSString *rainFall;
 @property (nonatomic, strong) NSString *updateTime;
+@property (nonatomic, strong) NSString *infoSource;
+
+- (id)initWithJSONString:(NSString *)JSONString;
+- (id)initWithJSONDictionary:(NSDictionary *)JSONDictionary;
 
 @end

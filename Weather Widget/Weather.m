@@ -28,12 +28,29 @@
 //UpdateTime: "2014-11-25 23:45"
 //}
 
+
+//@dynamic location;
+//@dynamic infoSource;
+
+//{
+//    "Location": "大義館7F",
+//    "Tempature": 10.7,
+//    "Humidity": 93.0,
+//    "WindDirection": "東",
+//    "WindSpeed": 3.9,
+//    "Atmosph": 1022.5,
+//    "RainFall": 19.75,
+//    "UpdateTime": "2015-03-11T16:45:00+08:00",
+//    "InfoSource": "大氣系"
+//}
+
 - (id)init {
     self = [super init];
     if (self) {
         // Custom initialization
     }
     
+    self.location = @"";
     self.tempature = @"";
     self.humidity = @"";
     self.windDirection = @"";
@@ -41,7 +58,59 @@
     self.atmosph = @"";
     self.rainFall = @"";
     self.updateTime = @"";
+    self.infoSource = @"";
     
+    return self;
+}
+
+- (NSString *)lowercaseFirstText:(NSString*) theString
+{
+    NSString *ansString = [theString stringByReplacingCharactersInRange:NSMakeRange(0,1)
+                                                              withString:[[theString  substringToIndex:1] lowercaseString]];
+    return ansString;
+}
+
+- (id)initWithJSONString:(NSString *)JSONString
+{
+    self = [super init];
+    if (self) {
+        
+        NSError *error = nil;
+        NSData *JSONData = [JSONString dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *JSONDictionary = [NSJSONSerialization JSONObjectWithData:JSONData options:0 error:&error];
+        
+        if (!error && JSONDictionary) {
+            
+            //Loop method
+            for (NSString* key in JSONDictionary) {
+                [self setValue:[JSONDictionary valueForKey:key] forKey:[self lowercaseFirstText:key]];
+            }
+            // Instead of Loop method you can also use:
+            // thanks @sapi for good catch and warning.
+            // [self setValuesForKeysWithDictionary:JSONDictionary];
+        }
+    }
+    return self;
+}
+
+- (id)initWithJSONDictionary:(NSDictionary *)JSONDictionary
+{
+    self = [super init];
+    if (self) {
+        
+        NSError *error = nil;
+        
+        if (!error && JSONDictionary) {
+            
+            //Loop method
+            for (NSString* key in JSONDictionary) {
+                [self setValue:[JSONDictionary valueForKey:key] forKey:[self lowercaseFirstText:key]];
+            }
+            // Instead of Loop method you can also use:
+            // thanks @sapi for good catch and warning.
+            // [self setValuesForKeysWithDictionary:JSONDictionary];
+        }
+    }
     return self;
 }
 

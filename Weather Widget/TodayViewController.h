@@ -12,8 +12,10 @@
 @interface TodayViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UILabel *test;
 
-@property (strong, nonatomic)
-Weather *weather;
+@property (strong, nonatomic) Weather *weather;
+@property (strong, nonatomic) NSMutableArray *weatherArray;
+@property (strong, nonatomic) NSArray *locationArray;
+@property (strong, nonatomic) NSString *errorMsg;
 
 @property (weak, nonatomic) IBOutlet UILabel *label1;
 @property (weak, nonatomic) IBOutlet UILabel *label2;
@@ -23,5 +25,8 @@ Weather *weather;
 @property (weak, nonatomic) IBOutlet UILabel *label6;
 @property (weak, nonatomic) IBOutlet UILabel *label7;
 
+@property (weak, nonatomic) IBOutlet UISegmentedControl *locationSegmented;
+
+- (IBAction)segmentSwitch:(UISegmentedControl *)sender;
 
 @end
