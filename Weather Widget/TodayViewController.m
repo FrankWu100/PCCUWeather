@@ -43,7 +43,9 @@
     NSLog(@"SelectedIndex: %ld", (long)selectedIndex);
     [_locationSegmented setSelectedSegmentIndex:selectedIndex];
     
-    [_locationSegmented setTintColor:[UIColor whiteColor]];
+    [_locationSegmented setTintColor:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.75]];
+    [_locationSegmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:1 green:1 blue:1 alpha:1]} forState:UIControlStateNormal];
+    [_locationSegmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:0 green:0 blue:0 alpha:1]} forState:UIControlStateSelected];
     
     [self refreshWeatherLabels];
 }
