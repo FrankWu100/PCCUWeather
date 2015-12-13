@@ -104,7 +104,22 @@
             
             //Loop method
             for (NSString* key in JSONDictionary) {
-                [self setValue:[JSONDictionary valueForKey:key] forKey:[self lowercaseFirstText:key]];
+                if ([[JSONDictionary valueForKey:key] isKindOfClass: [NSNumber class]]) {
+                    
+                    NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
+                    
+                    formatter.numberStyle = NSNumberFormatterNoStyle;
+                    formatter.minimumFractionDigits = 0;
+                    formatter.maximumFractionDigits = 1;
+                    
+                    // NSNumberFormatter を使用して、数値を小数点数 3 桁～ 6 桁までで表現した文字列を取得します。
+                    NSString* numString = [formatter stringFromNumber:[JSONDictionary valueForKey:key]];
+                    
+                    [self setValue:numString forKey:[self lowercaseFirstText:key]];
+                }
+                else {
+                    [self setValue:[JSONDictionary valueForKey:key] forKey:[self lowercaseFirstText:key]];
+                }
             }
             // Instead of Loop method you can also use:
             // thanks @sapi for good catch and warning.

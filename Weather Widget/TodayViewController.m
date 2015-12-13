@@ -43,6 +43,8 @@
     NSLog(@"SelectedIndex: %ld", (long)selectedIndex);
     [_locationSegmented setSelectedSegmentIndex:selectedIndex];
     
+    [_locationSegmented setTintColor:[UIColor whiteColor]];
+    
     [self refreshWeatherLabels];
 }
 
