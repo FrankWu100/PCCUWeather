@@ -112,6 +112,8 @@
                     formatter.minimumFractionDigits = 0;
                     formatter.maximumFractionDigits = 1;
                     
+                    formatter.minimumIntegerDigits = 1;
+                    
                     // NSNumberFormatter を使用して、数値を小数点数 3 桁～ 6 桁までで表現した文字列を取得します。
                     NSString* numString = [formatter stringFromNumber:[JSONDictionary valueForKey:key]];
                     
