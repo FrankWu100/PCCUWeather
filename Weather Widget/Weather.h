@@ -10,17 +10,24 @@
 
 @interface Weather : NSObject
 
-@property (nonatomic, strong) NSString *location;
-@property (nonatomic, strong) NSString *tempature;
-@property (nonatomic, strong) NSString *humidity;
-@property (nonatomic, strong) NSString *windDirection;
-@property (nonatomic, strong) NSString *windSpeed;
-@property (nonatomic, strong) NSString *atmosph;
-@property (nonatomic, strong) NSString *rainFall;
-@property (nonatomic, strong) NSString *updateTime;
-@property (nonatomic, strong) NSString *infoSource;
+@property (nonatomic, strong) NSString *Location;
+@property (nonatomic, strong) NSString *Tempature;
+@property (nonatomic, strong) NSString *Humidity;
+@property (nonatomic, strong) NSString *WindDirection;
+@property (nonatomic, strong) NSString *WindSpeed;
+@property (nonatomic, strong) NSString *Atmosph;
+@property (nonatomic, strong) NSString *RainFall;
+@property (nonatomic, strong) NSString *UpdateTime;
+@property (nonatomic, strong) NSString *InfoSource;
+@property (nonatomic, strong) NSString *WeatherDesciption;
 
 - (id)initWithJSONString:(NSString *)JSONString;
 - (id)initWithJSONDictionary:(NSDictionary *)JSONDictionary;
+
+- (NSString *)Tempature_withUnit;
+- (NSString *)Humidity_withUnit;
+- (NSString *)WindSpeed_withUnit;
+- (NSString *)Atmosph_withUnit;
+- (NSString *)RainFall_withUnit;
 
 @end

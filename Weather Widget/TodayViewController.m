@@ -9,6 +9,8 @@
 #import "TodayViewController.h"
 #import <NotificationCenter/NotificationCenter.h>
 #import "Reachability.h"
+#import <AFNetworking.h>
+#import "DeepCopy.h"
 
 @interface TodayViewController () <NCWidgetProviding>
 
@@ -21,6 +23,12 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
+    self.label1.text = [NSString stringWithFormat:@"溫度：無資料"];
+    self.label2.text = [NSString stringWithFormat:@"濕度：無資料"];
+    self.label3.text = [NSString stringWithFormat:@"風向：無資料"];
+    self.label4.text = [NSString stringWithFormat:@"風速：無資料"];
+    self.label5.text = [NSString stringWithFormat:@"氣壓：無資料"];
+    self.label6.text = [NSString stringWithFormat:@"雨量：無資料"];
     self.label7.text = @"更新中...";
     
     _weather = [[Weather alloc] init];
@@ -111,105 +119,79 @@
 
 - (void)setWeatherLabels:(Weather *)theWeather
 {
-    
-    //    self.label1.text = @"溫度：";
-    //    if (self.weather.tempature.doubleValue < 10.0) {
-    //        self.label1.text = [self.label1.text stringByAppendingString:@"  "];
-    //    }
-    //    self.label1.text = [self.label1.text stringByAppendingFormat:@"%.1f ℃", self.weather.tempature.doubleValue];
-    //
-    //    self.label2.text = @"濕度：";
-    //    if (self.weather.humidity.doubleValue < 10.0) {
-    //        self.label2.text = [self.label2.text stringByAppendingString:@"  "];
-    //    }
-    //    self.label2.text = [self.label2.text stringByAppendingFormat:@"%.1f %%", self.weather.humidity.doubleValue];
-    //
-    //    self.label3.text = [NSString stringWithFormat:@"風向：%@", self.weather.windDirection];
-    //
-    //    self.label4.text = @"風速：";
-    //    if (self.weather.windSpeed.doubleValue < 10.0) {
-    //        self.label4.text = [self.label4.text stringByAppendingString:@"  "];
-    //    }
-    //    self.label4.text = [self.label4.text stringByAppendingFormat:@"%.1f m/s", self.weather.windSpeed.doubleValue];
-    //
-    //    self.label5.text = [NSString stringWithFormat:@"氣壓：%.1f hPa", self.weather.atmosph.doubleValue];
-    //
-    //    self.label6.text = [NSString stringWithFormat:@"雨量：%.2f mm", self.weather.rainFall.doubleValue];
-    //
-    //    self.label7.text = [NSString stringWithFormat:@"更新時間：%@", self.weather.updateTime];
-    
-    self.label1.text = [NSString stringWithFormat:@"溫度：%@ ℃", theWeather.tempature];
-    
-    self.label2.text = [NSString stringWithFormat:@"濕度：%@ %%", theWeather.humidity];
-    
-    self.label3.text = [NSString stringWithFormat:@"風向：%@", theWeather.windDirection];
-    
-    self.label4.text = [NSString stringWithFormat:@"風速：%@ m/s", theWeather.windSpeed];
-    
-    self.label5.text = [NSString stringWithFormat:@"氣壓：%@ hPa", theWeather.atmosph];
-    
-    self.label6.text = [NSString stringWithFormat:@"雨量：%@ mm", theWeather.rainFall];
-    
-    self.label7.text = [NSString stringWithFormat:@"測量時間：%@", [self getUpdateTime:theWeather.updateTime]];
-
-//    if (![self connected]) {
-//        // not connected
-//        self.label7.text = [NSString stringWithFormat:@"測量時間：%@\n(離線)", [self getUpdateTime:theWeather.updateTime]];
-//    }
-//    else
-    if ([_errorMsg length]) {
-        self.label7.text = [NSString stringWithFormat:@"測量時間：%@\n(%@)", [self getUpdateTime:theWeather.updateTime], _errorMsg];
+    if ([theWeather.Tempature_withUnit length]) {
+        self.label1.text = [NSString stringWithFormat:@"溫度：%@", theWeather.Tempature_withUnit];
     }
     
-//    self.label7.text = [NSString stringWithFormat:([self connected] ? @"測量時間：%@" : @"測量時間：%@\n（沒有網路連線）"),  [self getUpdateTime:theWeather.updateTime]];
+    if ([theWeather.Humidity_withUnit length]) {
+        self.label2.text = [NSString stringWithFormat:@"濕度：%@", theWeather.Humidity_withUnit];
+    }
+    
+    if ([theWeather.WindDirection length]) {
+        self.label3.text = [NSString stringWithFormat:@"風向：%@", theWeather.WindDirection];
+    }
+    
+    if ([theWeather.WindSpeed_withUnit length]) {
+        self.label4.text = [NSString stringWithFormat:@"風速：%@", theWeather.WindSpeed_withUnit];
+    }
+    
+    if ([theWeather.Atmosph_withUnit length]) {
+        self.label5.text = [NSString stringWithFormat:@"氣壓：%@", theWeather.Atmosph_withUnit];
+    }
+    
+    if ([theWeather.RainFall_withUnit length]) {
+        self.label6.text = [NSString stringWithFormat:@"雨量：%@", theWeather.RainFall_withUnit];
+    }
+    
+    
+    if ([_errorMsg length]) {
+        self.label7.text = [NSString stringWithFormat:@"測量時間：%@\n(%@)", [self getUpdateTime:theWeather.UpdateTime], _errorMsg];
+    }
+    else
+    {
+        self.label7.text = [NSString stringWithFormat:@"測量時間：%@", [self getUpdateTime:theWeather.UpdateTime]];
+    }
 }
 
 - (void)updateWeather
 {
     //https://mobi.pccu.edu.tw/m/weather.json
     
-    //-- Make URL request with server
-    NSHTTPURLResponse *response = nil;
-    NSString *jsonUrlString = [NSString stringWithFormat:@"https://mobi.pccu.edu.tw/m/weather.json"];
-    NSURL *url = [NSURL URLWithString:[jsonUrlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     
-    //-- Get request and response though URL
-    NSURLRequest *request = [[NSURLRequest alloc]initWithURL:url];
-    NSError *error = nil;
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-    
-    _errorMsg = [[NSString alloc] init];
-    
-    if (error) {
-        NSLog(@"Error = %@", error);
-        NSLog(@"%@", [NSString stringWithFormat:@"%ld %@", (long)[error code], [[error userInfo] valueForKey:@"NSLocalizedDescription"]]);
+    NSURL *URL = [NSURL URLWithString:@"https://mobi.pccu.edu.tw/m/weather.json"];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    [manager GET:URL.absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        NSLog(@"JSON: %@", responseObject);
         
-        if (![self connected]) {
-            // not connected
-            self.label7.text = @"沒有網路連線";
-            //_errorMsg = @"沒有網路連線";
-            _errorMsg = [[error userInfo] valueForKey:@"NSLocalizedDescription"];
-        } else {
-            // connected, do some internet stuff
-            self.label7.text = [[error userInfo] valueForKey:@"NSLocalizedDescription"];
-            _errorMsg = [[error userInfo] valueForKey:@"NSLocalizedDescription"];
+        NSMutableArray *responseObject_mutable = [responseObject mutableDeepCopy];
+        
+        for (NSMutableDictionary *result in responseObject_mutable) {
+            for (NSString* key in result) {
+                if ((bool)[[result valueForKey:key] isKindOfClass:[NSNull class]]) {
+                    [result setObject:@"" forKey:key];
+                }
+            }
         }
-    }
-    else {
-        
-        //-- JSON Parsing
-        NSMutableDictionary *resultArray = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:nil];
-        NSLog(@"Result = %@", resultArray);
         
         NSUserDefaults* defs = [NSUserDefaults standardUserDefaults];
-        [defs setObject:resultArray forKey:@"WeatherDictionary"];
+        //[defs removeObjectForKey:@"WeatherDictionary"];
+        [defs setObject:responseObject_mutable forKey:@"WeatherDictionary"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
         [_weatherArray removeAllObjects];
-        for (NSDictionary *result in resultArray) {
+        for (NSDictionary *result in responseObject_mutable) {
             [_weatherArray addObject:[[Weather alloc] initWithJSONDictionary:result]];
         }
-    }
+
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+        NSLog(@"%@", [NSString stringWithFormat:@"%ld %@", (long)[error code], [[error userInfo] valueForKey:@"NSLocalizedDescription"]]);
+        if (![self connected]) {
+            // not connected
+            //self.label7.text = @"沒有網路連線";
+            _errorMsg = [[error userInfo] valueForKey:@"NSLocalizedDescription"];
+        }
+    }];
     
     [self refreshWeatherLabels];
 }
@@ -224,7 +206,7 @@
 - (Weather *)findWeatherFromArray:(NSString *)theLocation
 {
     for (Weather *theWeather in _weatherArray) {
-        if ([theWeather.location isEqualToString:theLocation]) {
+        if ([theWeather.Location isEqualToString:theLocation]) {
             return theWeather;
         }
     }
