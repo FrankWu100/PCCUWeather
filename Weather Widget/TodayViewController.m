@@ -182,7 +182,8 @@
         for (NSDictionary *result in responseObject_mutable) {
             [_weatherArray addObject:[[Weather alloc] initWithJSONDictionary:result]];
         }
-
+        
+        [self refreshWeatherLabels];
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"Error: %@", error);
         NSLog(@"%@", [NSString stringWithFormat:@"%ld %@", (long)[error code], [[error userInfo] valueForKey:@"NSLocalizedDescription"]]);
@@ -191,9 +192,9 @@
             //self.label7.text = @"沒有網路連線";
             _errorMsg = [[error userInfo] valueForKey:@"NSLocalizedDescription"];
         }
+        
+        [self refreshWeatherLabels];
     }];
-    
-    [self refreshWeatherLabels];
 }
 
 - (BOOL)connected
