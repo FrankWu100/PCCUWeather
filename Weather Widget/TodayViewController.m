@@ -31,6 +31,8 @@
         [_locationSegmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.9]} forState:UIControlStateSelected];
     }
     else if (versionNumber >= 10.0){
+        self.extensionContext.widgetLargestAvailableDisplayMode = NCWidgetDisplayModeExpanded;
+
         UIColor *blackC = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.75];
         self.label1.textColor = blackC;
         self.label2.textColor = blackC;
@@ -100,6 +102,15 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)widgetActiveDisplayModeDidChange:(NCWidgetDisplayMode)activeDisplayMode withMaximumSize:(CGSize)maxSize {
+    if (activeDisplayMode == NCWidgetDisplayModeExpanded) {
+        CGFloat dH = (([self.label7.text  rangeOfString:@"\n"].location != NSNotFound) ? 42.0 : 21.0) + 4;
+        self.preferredContentSize = CGSizeMake(0.0, 110.0 + dH);
+    } else if (activeDisplayMode == NCWidgetDisplayModeCompact) {
+        self.preferredContentSize = maxSize;
+    }
+}
+
 - (void)widgetPerformUpdateWithCompletionHandler:(void (^)(NCUpdateResult))completionHandler {
     // Perform any setup necessary in order to update the view.
     
@@ -165,6 +176,12 @@
     if (!self.isUpdating) {
         if ([_errorMsg length]) {
             self.label7.text = [NSString stringWithFormat:@"測量時間：%@\n(%@)", [self getUpdateTime:theWeather.UpdateTime], _errorMsg];
+            NCWidgetDisplayMode activeDisplayMode = self.extensionContext.widgetActiveDisplayMode;
+            
+            if (activeDisplayMode == NCWidgetDisplayModeExpanded) {
+                CGFloat dH = (([self.label7.text  rangeOfString:@"\n"].location != NSNotFound) ? 42.0 : 21.0) + 4;
+                self.preferredContentSize = CGSizeMake(0.0, 110.0 + dH);
+            }
         } else {
             self.label7.text = [NSString stringWithFormat:@"測量時間：%@", [self getUpdateTime:theWeather.UpdateTime]];
         }
