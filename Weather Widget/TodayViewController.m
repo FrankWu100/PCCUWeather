@@ -14,6 +14,8 @@
 
 @interface TodayViewController () <NCWidgetProviding>
 
+@property bool isUpdating;
+
 @end
 
 @implementation TodayViewController
@@ -22,14 +24,34 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    float versionNumber = [[[UIDevice currentDevice] systemVersion] floatValue];
+    if (versionNumber >= 8.0 && versionNumber < 10.0) {
+        [_locationSegmented setTintColor:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.6]];
+        [_locationSegmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.75]} forState:UIControlStateNormal];
+        [_locationSegmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.9]} forState:UIControlStateSelected];
+    }
+    else if (versionNumber >= 10.0){
+        UIColor *blackC = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.75];
+        self.label1.textColor = blackC;
+        self.label2.textColor = blackC;
+        self.label3.textColor = blackC;
+        self.label4.textColor = blackC;
+        self.label5.textColor = blackC;
+        self.label6.textColor = blackC;
+        self.label7.textColor = blackC;
+        [_locationSegmented setTintColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.6]];
+        [_locationSegmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.75]} forState:UIControlStateNormal];
+        [_locationSegmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.9]} forState:UIControlStateSelected];
+    }
     
+    // init
     self.label1.text = [NSString stringWithFormat:@"溫度：無資料"];
     self.label2.text = [NSString stringWithFormat:@"濕度：無資料"];
     self.label3.text = [NSString stringWithFormat:@"風向：無資料"];
     self.label4.text = [NSString stringWithFormat:@"風速：無資料"];
     self.label5.text = [NSString stringWithFormat:@"氣壓：無資料"];
     self.label6.text = [NSString stringWithFormat:@"雨量：無資料"];
-    self.label7.text = @"更新中...";
+    self.label7.text = [NSString stringWithFormat:@"更新中..."];
     
     _weather = [[Weather alloc] init];
     _weatherArray = [[NSMutableArray alloc] init];
@@ -51,10 +73,6 @@
     NSLog(@"SelectedIndex: %ld", (long)selectedIndex);
     [_locationSegmented setSelectedSegmentIndex:selectedIndex];
     
-    [_locationSegmented setTintColor:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.6]];
-    [_locationSegmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.75]} forState:UIControlStateNormal];
-    [_locationSegmented setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.9]} forState:UIControlStateSelected];
-    
     [self refreshWeatherLabels];
 }
 
@@ -63,7 +81,8 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    self.label7.text = @"更新中...";
+    self.label7.text = [NSString stringWithFormat:@"更新中..."];
+
 //    [self performUpdate];
     [self updateWeather];
 }
@@ -143,58 +162,61 @@
         self.label6.text = [NSString stringWithFormat:@"雨量：%@", theWeather.RainFall_withUnit];
     }
     
-    
-    if ([_errorMsg length]) {
-        self.label7.text = [NSString stringWithFormat:@"測量時間：%@\n(%@)", [self getUpdateTime:theWeather.UpdateTime], _errorMsg];
-    }
-    else
-    {
-        self.label7.text = [NSString stringWithFormat:@"測量時間：%@", [self getUpdateTime:theWeather.UpdateTime]];
+    if (!self.isUpdating) {
+        if ([_errorMsg length]) {
+            self.label7.text = [NSString stringWithFormat:@"測量時間：%@\n(%@)", [self getUpdateTime:theWeather.UpdateTime], _errorMsg];
+        } else {
+            self.label7.text = [NSString stringWithFormat:@"測量時間：%@", [self getUpdateTime:theWeather.UpdateTime]];
+        }
     }
 }
 
 - (void)updateWeather
 {
     //https://mobi.pccu.edu.tw/m/weather.json
-    
-    
-    NSURL *URL = [NSURL URLWithString:@"https://mobi.pccu.edu.tw/m/weather.json"];
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    [manager GET:URL.absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-        NSLog(@"JSON: %@", responseObject);
+    if (!self.isUpdating) {
+        self.isUpdating = true;
         
-        NSMutableArray *responseObject_mutable = [responseObject mutableDeepCopy];
-        
-        for (NSMutableDictionary *result in responseObject_mutable) {
-            for (NSString* key in result) {
-                if ((bool)[[result valueForKey:key] isKindOfClass:[NSNull class]]) {
-                    [result setObject:@"" forKey:key];
+        NSURL *URL = [NSURL URLWithString:@"https://mobi.pccu.edu.tw/m/weather.json"];
+        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        [manager GET:URL.absoluteString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+            NSLog(@"JSON: %@", responseObject);
+            
+            NSMutableArray *responseObject_mutable = [responseObject mutableDeepCopy];
+            
+            for (NSMutableDictionary *result in responseObject_mutable) {
+                for (NSString* key in result) {
+                    if ((bool)[[result valueForKey:key] isKindOfClass:[NSNull class]]) {
+                        [result setObject:@"" forKey:key];
+                    }
                 }
             }
-        }
-        
-        NSUserDefaults* defs = [NSUserDefaults standardUserDefaults];
-        //[defs removeObjectForKey:@"WeatherDictionary"];
-        [defs setObject:responseObject_mutable forKey:@"WeatherDictionary"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        
-        [_weatherArray removeAllObjects];
-        for (NSDictionary *result in responseObject_mutable) {
-            [_weatherArray addObject:[[Weather alloc] initWithJSONDictionary:result]];
-        }
-        
-        [self refreshWeatherLabels];
-    } failure:^(NSURLSessionTask *operation, NSError *error) {
-        NSLog(@"Error: %@", error);
-        NSLog(@"%@", [NSString stringWithFormat:@"%ld %@", (long)[error code], [[error userInfo] valueForKey:@"NSLocalizedDescription"]]);
-        if (![self connected]) {
-            // not connected
-            //self.label7.text = @"沒有網路連線";
-            _errorMsg = [[error userInfo] valueForKey:@"NSLocalizedDescription"];
-        }
-        
-        [self refreshWeatherLabels];
-    }];
+            
+            NSUserDefaults* defs = [NSUserDefaults standardUserDefaults];
+            //[defs removeObjectForKey:@"WeatherDictionary"];
+            [defs setObject:responseObject_mutable forKey:@"WeatherDictionary"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            
+            [_weatherArray removeAllObjects];
+            for (NSDictionary *result in responseObject_mutable) {
+                [_weatherArray addObject:[[Weather alloc] initWithJSONDictionary:result]];
+            }
+            
+            self.isUpdating = false;
+            [self refreshWeatherLabels];
+        } failure:^(NSURLSessionTask *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+            NSLog(@"%@", [NSString stringWithFormat:@"%ld %@", (long)[error code], [[error userInfo] valueForKey:@"NSLocalizedDescription"]]);
+            if (![self connected]) {
+                // not connected
+                //self.label7.text = @"沒有網路連線";
+                _errorMsg = [[error userInfo] valueForKey:@"NSLocalizedDescription"];
+            }
+            
+            self.isUpdating = false;
+            [self refreshWeatherLabels];
+        }];
+    }
 }
 
 - (BOOL)connected

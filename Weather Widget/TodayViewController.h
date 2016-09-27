@@ -10,7 +10,6 @@
 #import "Weather.h"
 
 @interface TodayViewController : UIViewController
-@property (weak, nonatomic) IBOutlet UILabel *test;
 
 @property (strong, nonatomic) Weather *weather;
 @property (strong, nonatomic) NSMutableArray *weatherArray;

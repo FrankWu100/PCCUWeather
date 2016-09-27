@@ -312,7 +312,7 @@
 				TargetAttributes = {
 					28F3A6E21A24CFA300809DB2 = {
 						CreatedOnToolsVersion = 6.1;
-						DevelopmentTeam = 7R9C9233DF;
+						DevelopmentTeam = G34P2FB38K;
 					};
 					28F3A6FB1A24CFA400809DB2 = {
 						CreatedOnToolsVersion = 6.1;
@@ -320,7 +320,7 @@
 					};
 					28F3A70F1A24D0AC00809DB2 = {
 						CreatedOnToolsVersion = 6.1;
-						DevelopmentTeam = 7R9C9233DF;
+						DevelopmentTeam = G34P2FB38K;
 					};
 				};
 			};
@@ -659,10 +659,9 @@
 			baseConfigurationReference = A9904D15697F6D346357B449 /* Pods-PCCUWeather.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = PCCUWeather/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "tw.com.pccu.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = tw.com.pccu.PCCUWeather;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -672,10 +671,9 @@
 			baseConfigurationReference = 0849967A6A6D93D34F25F1B6 /* Pods-PCCUWeather.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = PCCUWeather/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "tw.com.pccu.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = tw.com.pccu.PCCUWeather;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -729,7 +727,7 @@
 				);
 				INFOPLIST_FILE = "Weather Widget/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "tw.com.pccu.PCCUWeather.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = "tw.com.pccu.PCCUWeather.Weather-Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -742,7 +740,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = "Weather Widget/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "tw.com.pccu.PCCUWeather.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = "tw.com.pccu.PCCUWeather.Weather-Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
